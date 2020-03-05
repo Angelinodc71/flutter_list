@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_list/Pantalla2.dart';
 import 'package:http/http.dart' as http;
 
 class Pantalla1 extends StatefulWidget {
@@ -8,12 +9,12 @@ class Pantalla1 extends StatefulWidget {
 }
 
 class _Pantalla1State extends State<Pantalla1> {
-  var elementos = [];
+  var cards = [];
 
   @override
   void initState() {
     super.initState();
-    descargarClubs();
+    descargarCartas();
   }
 
   Widget build(BuildContext context) {
@@ -23,18 +24,24 @@ class _Pantalla1State extends State<Pantalla1> {
         appBar: AppBar(
           title: Text('Bienvenido'),
         ),
-        body: ListView.builder(
-          itemCount: elementos.length,
+        body: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          itemCount: cards.length,
           itemBuilder: (context, index) => Container(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                      elementos[index]["name"]
-                  ),
-                  Image.network("https://ringsdb.com/" + elementos[index]["imagesrc"])
-                ],
+            child: RaisedButton(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Pantalla2(cards[index])));
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        cards[index]["name"]
+                    ),
+                    Image.network("https://ringsdb.com/" + cards[index]["imagesrc"])
+                  ],
+                ),
               ),
             ),
         ),
@@ -43,11 +50,11 @@ class _Pantalla1State extends State<Pantalla1> {
     );
   }
 
-  descargarClubs() async {
+  descargarCartas() async {
     var respuesta = await http.get("https://ringsdb.com/api/public/cards/");
 
     setState(() {
-      elementos = jsonDecode(respuesta.body);
+      cards = jsonDecode(respuesta.body);
     });
   }
 }
